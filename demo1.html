@@ -11,6 +11,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .driving-pov {
@@ -20,10 +21,264 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            filter: blur(8px);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Glasses Overlay */
+        #glasses-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .glasses-frame {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            height: 200px;
+            display: flex;
+            justify-content: space-between;
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Left and right lenses */
+        .glasses-lens {
+            position: absolute;
+            width: 45%;
+            height: 100%;
+            border-radius: 15%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            background: url('assets/driving.jpg') center/cover no-repeat;
+            filter: blur(0);
+            z-index: 2;
+        }
+
+        .left-lens {
+            left: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        .right-lens {
+            right: 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        /* Nose bridge */
+        .glasses-nose-bridge {
+            position: absolute;
+            width: 10%;
+            height: 30px;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50% 50% 0 0;
+            z-index: 3;
+        }
+
+        /* Temples */
+        .glasses-temple-left,
+        .glasses-temple-right {
+            position: absolute;
+            width: 50%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .glasses-temple-left {
+            left: -50%;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .glasses-temple-right {
+            right: -50%;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Animation for the glasses frame */
+        @keyframes pulse {
+            0% { 
+                box-shadow: 0 0 15px 0 rgba(0, 150, 255, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 25px 5px rgba(0, 150, 255, 0.6);
+            }
+            100% { 
+                box-shadow: 0 0 15px 0 rgba(0, 150, 255, 0.4);
+            }
+        }
+
+        /* Initial state - glasses at normal size */
+        .glasses-frame {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            opacity: 1;
+            transition: none;
+        }
+
+        /* Animation for expanding the frame */
+        @keyframes expandFrame {
+            0% {
+                transform: scale(1) translateZ(0);
+            }
+            100% {
+                transform: scale(5) translateZ(0);
+                opacity: 0;
+            }
+        }
+
+        /* Animation for expanding the lenses */
+        @keyframes expandLens {
+            0% {
+                border: 8px solid rgba(0, 0, 0, 0.2);
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+                border-radius: 15%;
+                clip-path: inset(0 0 0 0);
+            }
+            100% {
+                border: 0;
+                box-shadow: none;
+                border-radius: 0;
+                clip-path: inset(0 0 0 0);
+                transform: scale(1.2);
+            }
+        }
+
+        .putting-on {
+            animation: expandFrame 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        
+        .expanding-lens {
+            animation: expandLens 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* Position the lenses */
+        .left-lens {
+            left: 0;
+            transform-origin: right center;
+        }
+
+        .right-lens {
+            right: 0;
+            transform-origin: left center;
+        }
+
+        /* Add a subtle highlight to the frame */
+        .glasses-frame::before,
+        .glasses-frame::after {
+            content: '';
+            position: absolute;
+            width: 45%;
+            height: 100%;
+            border: 8px solid rgba(0, 0, 0, 0.15);
+            border-radius: 15%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            animation: pulse 3s infinite;
+            pointer-events: none;
+        }
+
+        .glasses-frame::before {
+            left: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        .glasses-frame::after {
+            right: 0;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-left: none;
         }
     </style>
 </head>
 <body>
     <div class="driving-pov"></div>
+    <div id="glasses-overlay">
+        <div class="glasses-frame" id="glasses-frame">
+            <div class="glasses-lens left-lens"></div>
+            <div class="glasses-lens right-lens"></div>
+            <div class="glasses-nose-bridge"></div>
+            <div class="glasses-temple-left"></div>
+            <div class="glasses-temple-right"></div>
+        </div>
+    </div>
+    
+    <script>
+        function startAnimation() {
+            const glassesFrame = document.getElementById('glasses-frame');
+            const leftLens = document.querySelector('.left-lens');
+            const rightLens = document.querySelector('.right-lens');
+            const drivingPov = document.querySelector('.driving-pov');
+            
+            // Initial state - glasses at normal size
+            glassesFrame.style.transform = 'scale(1) translateZ(0)';
+            glassesFrame.style.opacity = '1';
+            
+            // Start the expansion after a short pause
+            setTimeout(() => {
+                // Add animation classes
+                glassesFrame.classList.add('putting-on');
+                leftLens.classList.add('expanding-lens');
+                rightLens.classList.add('expanding-lens');
+                
+                // After animation completes, clean up
+                setTimeout(() => {
+                    glassesFrame.style.display = 'none';
+                    drivingPov.style.filter = 'none';
+                }, 3000);
+            }, 1000); // 1 second pause at normal size
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start the animation
+            startAnimation();
+            
+            // Click to reset animation
+            document.addEventListener('click', () => {
+                const glassesFrame = document.getElementById('glasses-frame');
+                const leftLens = document.querySelector('.left-lens');
+                const rightLens = document.querySelector('.right-lens');
+                const drivingPov = document.querySelector('.driving-pov');
+                
+                // Reset styles
+                glassesFrame.style.display = 'flex';
+                drivingPov.style.filter = 'blur(8px)';
+                
+                // Reset animations
+                glassesFrame.classList.remove('putting-on');
+                leftLens.classList.remove('expanding-lens');
+                rightLens.classList.remove('expanding-lens');
+                
+                // Force reflow and restart
+                void glassesFrame.offsetWidth;
+                startAnimation();
+            });
+        });
+    </script>
 </body>
 </html>
