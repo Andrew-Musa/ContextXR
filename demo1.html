@@ -396,12 +396,17 @@
         let voiceTimeout = null;
 
         function showScenario(type) {
-            // Hide all scenarios and reset states
+            // Hide all scenarios first
             document.querySelectorAll('.scenario').forEach(el => {
                 el.style.display = 'none';
-                el.style.opacity = '1';
                 el.classList.remove('visible');
             });
+            
+            // Clear any existing timeouts
+            if (window.navTimeout) {
+                clearTimeout(window.navTimeout);
+                window.navTimeout = null;
+            }
             
             // Show selected scenario
             const scenario = document.getElementById(`${type}${type.includes('-scenario') ? '' : '-scenario'}`);
@@ -409,6 +414,18 @@
                 scenario.style.display = 'block';
                 scenario.classList.add('visible');
                 currentScenario = type;
+                
+                // Auto-hide navigation after 5 seconds
+                if (type === 'nav' || type === 'nav-scenario') {
+                    window.navTimeout = setTimeout(() => {
+                        scenario.style.opacity = '0';
+                        setTimeout(() => {
+                            scenario.style.display = 'none';
+                            scenario.classList.remove('visible');
+                            currentScenario = null;
+                        }, 300);
+                    }, 5000); // Show for 5 seconds
+                }
                 
                 // Reset call timer if showing call screen
                 if (type === 'call') {
