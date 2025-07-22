@@ -78,27 +78,64 @@
             pointer-events: auto;
         }
 
-        /* Navigation */
-        #nav-scenario { 
-            top: 20%; 
-            left: 50%; 
+        /* All scenarios positioned at top */
+        .scenario {
+            top: 20%;
+            left: 50%;
             transform: translateX(-50%);
+            text-align: center;
+            max-width: 80%;
+            padding: 20px;
         }
 
         /* Incoming Call */
         #call-scenario { 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%);
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
-        /* Hazard Alert */
-        #hazard-scenario { 
-            top: 10%; 
-            left: 50%; 
-            transform: translateX(-50%);
-            background: rgba(255, 50, 50, 0.9);
+        .call-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            animation: ring 1.5s infinite;
+        }
+
+        @keyframes ring {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .caller-name {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .caller-type {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .call-timer {
+            font-size: 14px;
+            color: #4CAF50;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .call-timer.visible {
+            opacity: 1;
+        }
+
+        .call-options {
+            display: none; /* Hidden by default */
         }
 
         .call-btn {
@@ -302,24 +339,36 @@
     </div>
     
     <!-- Scenarios -->
-    <div class="scenario" id="nav-scenario">→ In 500 ft, turn right onto Main St</div>
-
-    <div class="scenario" id="call-scenario">
-        <div>Incoming Call: Sarah</div>
-        <div>Mobile</div>
-        <div style="margin-top: 10px;">
-            <button class="call-btn" onclick="endCall()">Accept</button>
-            <button class="call-btn decline" onclick="endCall()">Decline</button>
-        </div>
+    <div class="scenario" id="nav-scenario">
+        <div>→ In 500 ft, turn right onto Main St</div>
     </div>
 
-    <div class="scenario" id="hazard-scenario">⚠️ Hazard: Vehicle stopped ahead</div>
+    <div class="scenario" id="call-scenario">
+        <div class="call-icon">📱</div>
+        <div class="caller-name">Sarah Johnson</div>
+        <div class="caller-type">Mobile</div>
+    </div>
+
+    <div class="scenario" id="call-accepted">
+        <div class="caller-name">Sarah Johnson</div>
+        <div class="call-timer">00:00</div>
+    </div>
+
+    <div class="scenario" id="call-declined">
+        <div>Declined.</div>
+    </div>
+
+    <div class="scenario" id="hazard-scenario">
+        <div>⚠️ Hazard: Vehicle stopped ahead</div>
+    </div>
 
     <!-- Scenario Selector -->
     <div class="scenario-selector" id="scenario-selector">
-        <button class="scenario-btn" onclick="showScenario('nav')">Navigation</button>
-        <button class="scenario-btn" onclick="showScenario('call')">Incoming Call</button>
-        <button class="scenario-btn" onclick="showScenario('hazard')">Hazard Alert</button>
+        <button class="scenario-btn" data-scenario="nav">Navigation</button>
+        <button class="scenario-btn" data-scenario="call">Incoming Call</button>
+        <button class="scenario-btn" data-scenario="call-accepted">Call Accepted</button>
+        <button class="scenario-btn" data-scenario="call-declined">Call Declined</button>
+        <button class="scenario-btn" data-scenario="hazard">Hazard Alert</button>
     </div>
 
     <script>
@@ -328,20 +377,145 @@
             document.getElementById('scenario-selector').style.display = 'flex';
         }, 4000);
 
+        let currentScenario = null;
+        let voiceTimeout = null;
+
         function showScenario(type) {
-            // Hide all scenarios
+            // Hide all scenarios and reset states
             document.querySelectorAll('.scenario').forEach(el => {
+                el.style.display = 'none';
+                el.style.opacity = '1';
                 el.classList.remove('visible');
             });
             
             // Show selected scenario
-            if (type) {
-                document.getElementById(`${type}-scenario`).classList.add('visible');
+            const scenario = document.getElementById(`${type}${type.includes('-scenario') ? '' : '-scenario'}`);
+            if (scenario) {
+                scenario.style.display = 'block';
+                scenario.classList.add('visible');
+                currentScenario = type;
+                
+                // Reset call timer if showing call screen
+                if (type === 'call') {
+                    const timerElement = document.querySelector('.call-timer');
+                    if (timerElement) {
+                        timerElement.textContent = '00:00';
+                        timerElement.classList.remove('visible');
+                    }
+                }
             }
         }
 
-        function endCall() {
-            document.getElementById('call-scenario').classList.remove('visible');
+        // Call timer variables
+        let callStartTime = 0;
+        let callTimer = null;
+
+        // Handle call actions with animation sequence
+        function handleCallAction(action) {
+            const callScreen = document.getElementById('call-scenario');
+            const acceptedScreen = document.getElementById('call-accepted');
+            const declinedScreen = document.getElementById('call-declined');
+            const timerElement = acceptedScreen.querySelector('.call-timer');
+            
+            // First, show the incoming call animation
+            showScenario('call');
+            
+            // After a delay, show the selected state
+            setTimeout(() => {
+                if (action === 'answer') {
+                    // Fade to accepted state
+                    callScreen.style.opacity = '0';
+                    acceptedScreen.style.opacity = '0';
+                    acceptedScreen.style.display = 'block';
+                    
+                    // Fade in accepted screen
+                    setTimeout(() => {
+                        callScreen.style.display = 'none';
+                        acceptedScreen.style.opacity = '1';
+                        timerElement.classList.add('visible');
+                        startCallTimer(timerElement);
+                        
+                        // Auto-end call after 10 seconds for demo
+                        setTimeout(() => endCall(timerElement), 10000);
+                    }, 300);
+                    
+                } else if (action === 'decline') {
+                    // Fade to declined state
+                    callScreen.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        callScreen.style.display = 'none';
+                        declinedScreen.style.display = 'block';
+                        
+                        // Hide after delay
+                        setTimeout(() => {
+                            declinedScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                declinedScreen.style.display = 'none';
+                                declinedScreen.style.opacity = '1';
+                            }, 300);
+                        }, 1500);
+                    }, 300);
+                }
+            }, 2000); // Show incoming call for 2 seconds before transitioning
+        }
+
+        // Start call timer
+        function startCallTimer(timerElement) {
+            callStartTime = Date.now();
+            clearInterval(callTimer);
+            
+            callTimer = setInterval(() => {
+                const seconds = Math.floor((Date.now() - callStartTime) / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // End call
+        function endCall(timerElement) {
+            clearInterval(callTimer);
+            if (timerElement) timerElement.classList.remove('visible');
+        }
+
+        // Initialize voice command simulation
+        function initVoiceCommands() {
+            // Handle demo buttons
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const scenario = e.target.getAttribute('data-scenario');
+                    
+                    // Prevent default to avoid any default button behavior
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (scenario === 'call-accepted') {
+                        handleCallAction('answer');
+                    } else if (scenario === 'call-declined') {
+                        handleCallAction('decline');
+                    } else if (scenario === 'call') {
+                        // For the main call button, just show the call screen
+                        showScenario('call');
+                    } else {
+                        // For other scenarios, just show them directly
+                        showScenario(scenario);
+                    }
+                    return false;
+                });
+            });
+
+            // Keyboard shortcuts for testing
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'a') {
+                    handleCallAction('answer');
+                    e.preventDefault();
+                }
+                if (e.key === 'd') {
+                    handleCallAction('decline');
+                    e.preventDefault();
+                }
+            });
         }
 
         function startAnimation() {
@@ -372,24 +546,39 @@
         
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            // Start the animation
+            // Initialize voice commands and animations
+            initVoiceCommands();
+            
+            // Start the initial glasses animation
             startAnimation();
+            
+            // Show scenario selector after glasses animation
+            setTimeout(() => {
+                document.getElementById('scenario-selector').style.display = 'flex';
+            }, 4000);
             
             // Click to reset animation (only when clicking on the background)
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.scenario') && !e.target.closest('.scenario-selector')) {
+                // Only reset if clicking on the background, not on any UI elements
+                if (!e.target.closest('.scenario') && 
+                    !e.target.closest('.scenario-selector') && 
+                    !e.target.closest('.call-option')) {
+                    
                     const glassesFrame = document.getElementById('glasses-frame');
                     const leftLens = document.querySelector('.left-lens');
                     const rightLens = document.querySelector('.right-lens');
                     const drivingPov = document.querySelector('.driving-pov');
                     
-                    // Reset styles
+                    // Reset glasses styles
                     glassesFrame.style.display = 'flex';
+                    glassesFrame.style.opacity = '1';
                     drivingPov.style.filter = 'blur(8px)';
                     document.getElementById('scenario-selector').style.display = 'none';
                     
                     // Hide all scenarios
                     document.querySelectorAll('.scenario').forEach(el => {
+                        el.style.display = 'none';
+                        el.style.opacity = '1';
                         el.classList.remove('visible');
                     });
                     
@@ -401,6 +590,11 @@
                     // Force reflow and restart
                     void glassesFrame.offsetWidth;
                     startAnimation();
+                    
+                    // Show scenario selector again after animation
+                    setTimeout(() => {
+                        document.getElementById('scenario-selector').style.display = 'flex';
+                    }, 4000);
                 }
             });
         });
