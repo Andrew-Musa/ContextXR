@@ -80,12 +80,27 @@
 
         /* All scenarios positioned at top */
         .scenario {
+            position: fixed;
             top: 20%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             max-width: 80%;
             padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1500;
+        }
+        
+        /* Compact style for call ended state */
+        .scenario.call-ended {
+            padding: 10px 20px;
+            min-width: auto;
+            display: inline-block;
         }
 
         /* Incoming Call */
@@ -476,7 +491,28 @@
         // End call
         function endCall(timerElement) {
             clearInterval(callTimer);
-            if (timerElement) timerElement.classList.remove('visible');
+            if (timerElement) {
+                timerElement.classList.remove('visible');
+                
+                // Show call ended message
+                const acceptedScreen = document.getElementById('call-accepted');
+                const endedMessage = document.createElement('div');
+                endedMessage.className = 'scenario call-ended';
+                endedMessage.textContent = 'Ended.';
+                
+                // Replace the call screen with ended message
+                acceptedScreen.parentNode.insertBefore(endedMessage, acceptedScreen.nextSibling);
+                acceptedScreen.style.display = 'none';
+                endedMessage.classList.add('visible');
+                
+                // Remove ended message after 1.5 seconds
+                setTimeout(() => {
+                    endedMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        endedMessage.remove();
+                    }, 300);
+                }, 1500);
+            }
         }
 
         // Initialize voice command simulation
