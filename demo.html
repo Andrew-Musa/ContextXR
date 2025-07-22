@@ -20,61 +20,25 @@
     </header>
     <main>
         <section class="card">
-    <h2>Advanced Interactive Demo</h2>
-    <p>Simulate how an XR interface adapts to multiple user contexts. Toggle the context factors below to see the interface adapt in real time!</p>
-    <div id="demo-container">
-        <div class="context-panel">
-            <h3>Simulate Context</h3>
-            <form id="context-form">
-                <label><input type="checkbox" name="bright"> Bright Environment</label><br>
-                <label><input type="checkbox" name="dim"> Dim Environment</label><br>
-                <label><input type="checkbox" name="distracted"> User Distracted</label><br>
-                <label><input type="checkbox" name="focused"> User Focused</label><br>
-                <label><input type="checkbox" name="handsBusy"> Hands Busy</label><br>
-                <label><input type="checkbox" name="lowBattery"> Low Battery</label><br>
-                <label><input type="checkbox" name="noisy"> Noisy Environment</label><br>
-            </form>
-            <button id="accessibility-toggle">Toggle Accessibility Mode</button>
-        </div>
-        <div class="ui-panel">
-            <h3>XR UI Simulation</h3>
-            <div id="xr-interface" class="xr-default">
-                <button id="main-action">Action</button>
-                <input type="range" min="0" max="100" value="50" id="slider">
-                <span id="notification" class="hidden">Notification: Attention Needed!</span>
-                <div id="status-indicator">Status: Normal</div>
-            </div>
-        </div>
-        <div class="state-panel">
-            <h3>User State</h3>
-            <ul id="user-state-list"></ul>
-        </div>
-        <div class="log-panel">
-            <h3>Adaptation Log</h3>
-            <ul id="adaptation-log"></ul>
-        </div>
-        <div class="explanation-panel">
-            <h3>Why did the UI adapt?</h3>
-            <div id="explanation-content">Interact with the context toggles to see explanations.</div>
+    <h2>XR Interface: See Adaptability in Action!</h2>
+    <div class="info-box">
+        Try the scenarios below to see how an XR interface can adapt to you. Each button shows a real-world example!
+    </div>
+    <div id="simple-demo-controls">
+        <button class="scenario-btn" data-scenario="bright">Bright Room</button>
+        <button class="scenario-btn" data-scenario="distracted">User Distracted</button>
+        <button class="scenario-btn" data-scenario="handsBusy">Hands Busy</button>
+        <button class="scenario-btn" data-scenario="reset">Reset</button>
+    </div>
+    <div class="ui-panel">
+        <h3>XR UI Simulation</h3>
+        <div id="xr-interface" class="xr-default">
+            <button id="main-action">Action</button>
+            <span id="notification" class="hidden">Notification: Please focus!</span>
         </div>
     </div>
-    <div class="algo-panel">
-        <h3>Adaptation Logic (Pseudocode)</h3>
-        <pre id="algo-pseudocode">
-context = sense_context()
-if context['bright']:
-    ui.set_theme('high-contrast')
-if context['dim']:
-    ui.set_theme('dark')
-if context['distracted']:
-    ui.show_notification('Focus needed!')
-if context['handsBusy']:
-    ui.enlarge_buttons()
-if context['lowBattery']:
-    ui.disable_heavy_features()
-if context['noisy']:
-    ui.enable_visual_cues()
-        </pre>
+    <div class="simple-explanation" id="simple-explanation">
+        Click a scenario to see what changes and why.
     </div>
 </section>
     </main>

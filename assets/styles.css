@@ -13,7 +13,111 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     animation: fadeIn 0.5s;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+.info-box {
+    background: #e3e9f6;
+    color: #284e8f;
+    padding: 1.1rem 1.2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(40, 78, 143, 0.05);
+}
+
+#simple-demo-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+.scenario-btn {
+    background: #284e8f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    padding: 1.1rem 1.9rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(40, 78, 143, 0.10);
+}
+.scenario-btn:hover {
+    background: #3d6dcc;
+    transform: translateY(-2px) scale(1.04);
+}
+
+.ui-panel {
+    background: #f6f8fa;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(40, 78, 143, 0.06);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+#xr-interface {
+    margin-top: 1rem;
+    padding: 2rem;
+    border-radius: 10px;
+    background: #e3e9f6;
+    transition: background 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+}
+.xr-bright {
+    background: #fffbe6;
+    box-shadow: 0 0 20px #ffe066;
+}
+.xr-distracted {
+    background: #ffe6e6;
+    box-shadow: 0 0 10px #ff6f61;
+}
+.xr-default {
+    background: #e3e9f6;
+    color: #222;
+}
+#main-action {
+    padding: 0.7rem 1.5rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 6px;
+    background: #284e8f;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, font-size 0.2s, padding 0.2s;
+}
+#main-action:hover {
+    background: #3d6dcc;
+}
+#notification {
+    background: #ff6f61;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    display: inline-block;
+    font-weight: bold;
+    animation: fadeIn 0.4s;
+}
+#notification.hidden {
+    display: none;
+}
+.simple-explanation {
+    margin-top: 1.5rem;
+    font-size: 1.12rem;
+    color: #222;
+    text-align: center;
+    min-height: 2.5em;
+}
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
