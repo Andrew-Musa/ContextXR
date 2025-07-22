@@ -41,6 +41,80 @@
             perspective: 1000px;
         }
 
+        /* Scenario Selector */
+        .scenario-selector {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            z-index: 2000;
+        }
+
+        .scenario-btn {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Scenario Elements */
+        .scenario {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1500;
+        }
+
+        .scenario.visible { 
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Navigation */
+        #nav-scenario { 
+            top: 20%; 
+            left: 50%; 
+            transform: translateX(-50%);
+        }
+
+        /* Incoming Call */
+        #call-scenario { 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        /* Hazard Alert */
+        #hazard-scenario { 
+            top: 10%; 
+            left: 50%; 
+            transform: translateX(-50%);
+            background: rgba(255, 50, 50, 0.9);
+        }
+
+        .call-btn {
+            margin: 0 5px; 
+            padding: 5px 15px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .call-btn.decline {
+            background: #f44336;
+        }
+
         .glasses-frame {
             position: relative;
             width: 80%;
@@ -227,7 +301,49 @@
         </div>
     </div>
     
+    <!-- Scenarios -->
+    <div class="scenario" id="nav-scenario">→ In 500 ft, turn right onto Main St</div>
+
+    <div class="scenario" id="call-scenario">
+        <div>Incoming Call: Sarah</div>
+        <div>Mobile</div>
+        <div style="margin-top: 10px;">
+            <button class="call-btn" onclick="endCall()">Accept</button>
+            <button class="call-btn decline" onclick="endCall()">Decline</button>
+        </div>
+    </div>
+
+    <div class="scenario" id="hazard-scenario">⚠️ Hazard: Vehicle stopped ahead</div>
+
+    <!-- Scenario Selector -->
+    <div class="scenario-selector" id="scenario-selector">
+        <button class="scenario-btn" onclick="showScenario('nav')">Navigation</button>
+        <button class="scenario-btn" onclick="showScenario('call')">Incoming Call</button>
+        <button class="scenario-btn" onclick="showScenario('hazard')">Hazard Alert</button>
+    </div>
+
     <script>
+        // Show scenario selector after glasses animation
+        setTimeout(() => {
+            document.getElementById('scenario-selector').style.display = 'flex';
+        }, 4000);
+
+        function showScenario(type) {
+            // Hide all scenarios
+            document.querySelectorAll('.scenario').forEach(el => {
+                el.classList.remove('visible');
+            });
+            
+            // Show selected scenario
+            if (type) {
+                document.getElementById(`${type}-scenario`).classList.add('visible');
+            }
+        }
+
+        function endCall() {
+            document.getElementById('call-scenario').classList.remove('visible');
+        }
+
         function startAnimation() {
             const glassesFrame = document.getElementById('glasses-frame');
             const leftLens = document.querySelector('.left-lens');
@@ -245,10 +361,11 @@
                 leftLens.classList.add('expanding-lens');
                 rightLens.classList.add('expanding-lens');
                 
-                // After animation completes, clean up
+                // After animation completes, clean up and show scenario selector
                 setTimeout(() => {
                     glassesFrame.style.display = 'none';
                     drivingPov.style.filter = 'none';
+                    document.getElementById('scenario-selector').style.display = 'flex';
                 }, 3000);
             }, 1000); // 1 second pause at normal size
         }
@@ -258,25 +375,33 @@
             // Start the animation
             startAnimation();
             
-            // Click to reset animation
-            document.addEventListener('click', () => {
-                const glassesFrame = document.getElementById('glasses-frame');
-                const leftLens = document.querySelector('.left-lens');
-                const rightLens = document.querySelector('.right-lens');
-                const drivingPov = document.querySelector('.driving-pov');
-                
-                // Reset styles
-                glassesFrame.style.display = 'flex';
-                drivingPov.style.filter = 'blur(8px)';
-                
-                // Reset animations
-                glassesFrame.classList.remove('putting-on');
-                leftLens.classList.remove('expanding-lens');
-                rightLens.classList.remove('expanding-lens');
-                
-                // Force reflow and restart
-                void glassesFrame.offsetWidth;
-                startAnimation();
+            // Click to reset animation (only when clicking on the background)
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.scenario') && !e.target.closest('.scenario-selector')) {
+                    const glassesFrame = document.getElementById('glasses-frame');
+                    const leftLens = document.querySelector('.left-lens');
+                    const rightLens = document.querySelector('.right-lens');
+                    const drivingPov = document.querySelector('.driving-pov');
+                    
+                    // Reset styles
+                    glassesFrame.style.display = 'flex';
+                    drivingPov.style.filter = 'blur(8px)';
+                    document.getElementById('scenario-selector').style.display = 'none';
+                    
+                    // Hide all scenarios
+                    document.querySelectorAll('.scenario').forEach(el => {
+                        el.classList.remove('visible');
+                    });
+                    
+                    // Reset animations
+                    glassesFrame.classList.remove('putting-on');
+                    leftLens.classList.remove('expanding-lens');
+                    rightLens.classList.remove('expanding-lens');
+                    
+                    // Force reflow and restart
+                    void glassesFrame.offsetWidth;
+                    startAnimation();
+                }
             });
         });
     </script>
