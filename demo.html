@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive XR Demo</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Adaptive XR Demo</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="demo.html">Demo</a></li>
+                <li><a href="impact.html">Impact</a></li>
+                <li><a href="technical-details.md">Technical Details</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Interactive Demo</h2>
+            <p>Simulate how an XR interface adapts to different user contexts. Change the context below to see the interface update!</p>
+            <div id="demo-container">
+                <!-- Demo UI will go here -->
+                <label for="context-select">Choose context:</label>
+                <select id="context-select">
+                    <option value="default">Default</option>
+                    <option value="bright">Bright Environment</option>
+                    <option value="dim">Dim Environment</option>
+                    <option value="distracted">User Distracted</option>
+                    <option value="focused">User Focused</option>
+                </select>
+                <div id="xr-interface" class="xr-default">
+                    <button>Action</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Adaptive XR Demo</p>
+    </footer>
+    <script src="assets/demo.js"></script>
+</body>
+</html>
