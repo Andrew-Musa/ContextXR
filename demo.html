@@ -18,36 +18,77 @@
             </ul>
         </nav>
     </header>
-    <main>
-        <section class="card">
-    <h2>🥽 Smart XR Interface Demo</h2>
-    <div class="info-box">
-        <strong>See how XR interfaces adapt to help you!</strong><br>
-        Click each scenario below to see real-world examples of smart adaptation.
+    <div id="glasses-overlay">
+        <div class="glasses-frame">
+            <div class="glasses-lens left-lens"></div>
+            <div class="glasses-lens right-lens"></div>
+            <div class="glasses-nose-bridge"></div>
+            <div class="glasses-temple-left"></div>
+            <div class="glasses-temple-right"></div>
+        </div>
     </div>
-    
-    <!-- Scenario Selection -->
-    <div class="scenario-grid">
-        <button class="scenario-card" data-scenario="bright">
-            <div class="scenario-icon">☀️</div>
-            <div class="scenario-title">Bright Sunlight</div>
-            <div class="scenario-desc">Outdoors on a sunny day</div>
-        </button>
-        <button class="scenario-card" data-scenario="distracted">
-            <div class="scenario-icon">📱</div>
-            <div class="scenario-title">Getting Distracted</div>
-            <div class="scenario-desc">Phone buzzing, people talking</div>
-        </button>
-        <button class="scenario-card" data-scenario="handsBusy">
-            <div class="scenario-icon">🔧</div>
-            <div class="scenario-title">Hands Are Busy</div>
-            <div class="scenario-desc">Working with tools or objects</div>
-        </button>
-        <button class="scenario-card" data-scenario="walking">
-            <div class="scenario-icon">🚶</div>
-            <div class="scenario-title">Walking Around</div>
-            <div class="scenario-desc">Moving through a space</div>
-        </button>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="scenario-sidebar">
+            <div class="sidebar-header">
+                <h2>👓 Smart Glasses</h2>
+                <p>Select a scenario to begin</p>
+            </div>
+            <nav class="scenario-list">
+                <button class="scenario-item active" data-scenario="bright">
+                    <span class="scenario-icon">☀️</span>
+                    <div class="scenario-info">
+                        <h3>Bright Sunlight</h3>
+                        <p>Outdoors on a sunny day</p>
+                    </div>
+                </button>
+                <button class="scenario-item" data-scenario="driving">
+                    <span class="scenario-icon">🚗</span>
+                    <div class="scenario-info">
+                        <h3>Driving</h3>
+                        <p>On the road</p>
+                    </div>
+                </button>
+                <button class="scenario-item" data-scenario="meeting">
+                    <span class="scenario-icon">👔</span>
+                    <div class="scenario-info">
+                        <h3>In a Meeting</h3>
+                        <p>Professional setting</p>
+                    </div>
+                </button>
+                <button class="scenario-item" data-scenario="handsBusy">
+                    <span class="scenario-icon">🔧</span>
+                    <div class="scenario-info">
+                        <h3>Hands Full</h3>
+                        <p>Working with tools</p>
+                    </div>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="scenario-viewport">
+            <div class="scenario-background" id="scenario-bg"></div>
+            
+            <!-- Notification Element (will be positioned dynamically) -->
+            <div class="notification" id="notification">
+                <div class="notification-content">
+                    <h4>New Message</h4>
+                    <p>Meeting in 15 minutes</p>
+                </div>
+            </div>
+            
+            <!-- Controls for current scenario -->
+            <div class="scenario-controls">
+                <h3>Scenario Controls</h3>
+                <div class="control-buttons" id="scenario-controls">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Debug cursor position -->
+            <div class="cursor-debug" id="cursor-debug"></div>
+        </main>
         <button class="scenario-card" data-scenario="noisy">
             <div class="scenario-icon">🔊</div>
             <div class="scenario-title">Noisy Environment</div>
