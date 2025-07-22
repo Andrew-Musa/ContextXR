@@ -20,25 +20,79 @@
     </header>
     <main>
         <section class="card">
-    <h2>XR Interface: See Adaptability in Action!</h2>
+    <h2>🥽 Smart XR Interface Demo</h2>
     <div class="info-box">
-        Try the scenarios below to see how an XR interface can adapt to you. Each button shows a real-world example!
+        <strong>See how XR interfaces adapt to help you!</strong><br>
+        Click each scenario below to see real-world examples of smart adaptation.
     </div>
-    <div id="simple-demo-controls">
-        <button class="scenario-btn" data-scenario="bright">Bright Room</button>
-        <button class="scenario-btn" data-scenario="distracted">User Distracted</button>
-        <button class="scenario-btn" data-scenario="handsBusy">Hands Busy</button>
-        <button class="scenario-btn" data-scenario="reset">Reset</button>
+    
+    <!-- Scenario Selection -->
+    <div class="scenario-grid">
+        <button class="scenario-card" data-scenario="bright">
+            <div class="scenario-icon">☀️</div>
+            <div class="scenario-title">Bright Sunlight</div>
+            <div class="scenario-desc">Outdoors on a sunny day</div>
+        </button>
+        <button class="scenario-card" data-scenario="distracted">
+            <div class="scenario-icon">📱</div>
+            <div class="scenario-title">Getting Distracted</div>
+            <div class="scenario-desc">Phone buzzing, people talking</div>
+        </button>
+        <button class="scenario-card" data-scenario="handsBusy">
+            <div class="scenario-icon">🔧</div>
+            <div class="scenario-title">Hands Are Busy</div>
+            <div class="scenario-desc">Working with tools or objects</div>
+        </button>
+        <button class="scenario-card" data-scenario="walking">
+            <div class="scenario-icon">🚶</div>
+            <div class="scenario-title">Walking Around</div>
+            <div class="scenario-desc">Moving through a space</div>
+        </button>
+        <button class="scenario-card" data-scenario="noisy">
+            <div class="scenario-icon">🔊</div>
+            <div class="scenario-title">Noisy Environment</div>
+            <div class="scenario-desc">Construction site, busy street</div>
+        </button>
+        <button class="scenario-card" data-scenario="tired">
+            <div class="scenario-icon">😴</div>
+            <div class="scenario-title">Feeling Tired</div>
+            <div class="scenario-desc">End of long day, low energy</div>
+        </button>
     </div>
+    
+    <!-- Interface Simulation -->
     <div class="ui-panel">
-        <h3>XR UI Simulation</h3>
+        <h3>🎮 XR Interface Simulation</h3>
+        <div class="context-indicator" id="context-indicator">
+            <span class="context-label">Current Context:</span>
+            <span class="context-value" id="context-value">Normal conditions</span>
+        </div>
         <div id="xr-interface" class="xr-default">
-            <button id="main-action">Action</button>
-            <span id="notification" class="hidden">Notification: Please focus!</span>
+            <div class="interface-elements">
+                <button id="main-action" class="primary-btn">Start Task</button>
+                <button id="secondary-action" class="secondary-btn">Settings</button>
+                <div id="info-display" class="info-display">Ready to begin</div>
+            </div>
+            <div id="notification" class="notification hidden">⚠️ Please focus on the task</div>
+            <div id="voice-indicator" class="voice-indicator hidden">🎤 Voice commands active</div>
+            <div id="gesture-hint" class="gesture-hint hidden">👋 Use hand gestures</div>
         </div>
     </div>
-    <div class="simple-explanation" id="simple-explanation">
-        Click a scenario to see what changes and why.
+    
+    <!-- Explanation Panel -->
+    <div class="explanation-panel">
+        <div class="explanation-header">
+            <h4>💡 What's Happening?</h4>
+        </div>
+        <div class="explanation-content" id="explanation-content">
+            <p>Select a scenario above to see how the XR interface intelligently adapts to help you succeed in different situations.</p>
+            <div class="adaptation-list" id="adaptation-list"></div>
+        </div>
+    </div>
+    
+    <!-- Reset Button -->
+    <div class="reset-section">
+        <button class="reset-btn" data-scenario="reset">🔄 Reset to Normal</button>
     </div>
 </section>
     </main>
