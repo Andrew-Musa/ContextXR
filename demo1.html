@@ -24,6 +24,7 @@
             filter: blur(8px);
             position: relative;
             z-index: 1;
+            transition: filter 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
         /* Glasses Overlay */
@@ -276,13 +277,25 @@
             }
         }
 
-        /* Animation for expanding the lenses */
         @keyframes expandLens {
             0% {
-                border: 8px solid rgba(0, 0, 0, 0.2);
+                border: 8px solid rgba(0, 0, 0, 0.15);
                 box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
                 border-radius: 15%;
                 clip-path: inset(0 0 0 0);
+                transform: scale(1);
+            }
+            60% {
+                border: 4px solid rgba(0, 0, 0, 0.08);
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.12);
+                border-radius: 8%;
+                transform: scale(1.12);
+            }
+            80% {
+                border: 2px solid rgba(0, 0, 0, 0.04);
+                box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+                border-radius: 4%;
+                transform: scale(1.16);
             }
             100% {
                 border: 0;
@@ -293,416 +306,192 @@
             }
         }
 
-        .putting-on {
-            animation: expandFrame 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-        
-        .expanding-lens {
-            animation: expandLens 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
 
-        /* Position the lenses */
-        .left-lens {
-            left: 0;
-            transform-origin: right center;
-        }
-
-        .right-lens {
-            right: 0;
-            transform-origin: left center;
-        }
-
-        /* Add a subtle highlight to the frame */
-        .glasses-frame::before,
-        .glasses-frame::after {
-            content: '';
-            position: absolute;
-            width: 45%;
-            height: 100%;
-            border: 8px solid rgba(0, 0, 0, 0.15);
-            border-radius: 15%;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            animation: pulse 3s infinite;
-            pointer-events: none;
-        }
-
-        .glasses-frame::before {
-            left: 0;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            border-right: none;
-        }
-
-        .glasses-frame::after {
-            right: 0;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            border-left: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="driving-pov"></div>
-    <div id="glasses-overlay">
-        <div class="glasses-frame" id="glasses-frame">
-            <div class="glasses-lens left-lens"></div>
-            <div class="glasses-lens right-lens"></div>
-            <div class="glasses-nose-bridge"></div>
-            <div class="glasses-temple-left"></div>
-            <div class="glasses-temple-right"></div>
-        </div>
-    </div>
+    .putting-on {
+        animation: expandFrame 2.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
     
-    <!-- Scenarios -->
-    <div class="scenario" id="nav-scenario">
-        <div>→ In 500 ft, turn right onto Main St</div>
-    </div>
+    .expanding-lens {
+        animation: expandLens 2.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
 
-    <div class="scenario" id="call-scenario">
-        <div class="call-icon">📱</div>
-        <div class="caller-name">Sarah Johnson</div>
-        <div class="caller-type">Mobile</div>
-    </div>
+    .driving-pov {
+        transition: filter 0.5s ease-out;
+    }
 
-    <div class="scenario" id="call-accepted">
-        <div class="caller-name">Sarah Johnson</div>
-        <div class="call-timer">00:00</div>
-    </div>
+    /* ... */
+</style>
 
-    <div class="scenario call-ended" id="call-declined">
-        <div>Declined.</div>
-    </div>
+<!-- ... -->
 
-    <div class="scenario" id="hazard-scenario">
-        <div>⚠️ Hazard: Vehicle stopped ahead</div>
+<div class="driving-pov"></div>
+<div id="glasses-overlay">
+    <div class="glasses-frame" id="glasses-frame">
+        <div class="glasses-lens left-lens"></div>
+        <div class="glasses-lens right-lens"></div>
+        <div class="glasses-nose-bridge"></div>
+        <div class="glasses-temple-left"></div>
+        <div class="glasses-temple-right"></div>
     </div>
+</div>
 
-    <!-- Scenario Selector -->
-    <div class="scenario-selector" id="scenario-selector">
-        <button class="scenario-btn" data-scenario="nav">Navigation</button>
-        <button class="scenario-btn" data-scenario="call">Incoming Call</button>
-        <button class="scenario-btn" data-scenario="call-accepted">Call Accepted</button>
-        <button class="scenario-btn" data-scenario="call-declined">Call Declined</button>
-        <button class="scenario-btn" data-scenario="hazard">Hazard Alert</button>
-    </div>
+<!-- Scenarios -->
+<div class="scenario" id="nav-scenario">
+    <div>→ In 500 ft, turn right onto Main St</div>
+</div>
+<div class="scenario" id="call-scenario">
+    <div class="call-icon">📱</div>
+    <div class="caller-name">Sarah Johnson</div>
+    <div class="caller-type">Mobile</div>
+</div>
+<div class="scenario" id="call-accepted">
+    <div class="caller-name">Sarah Johnson</div>
+    <div class="call-timer">00:00</div>
+</div>
+<div class="scenario call-ended" id="call-declined">
+    <div>Declined.</div>
+</div>
+<div class="scenario" id="hazard-scenario">
+    <div>⚠️ Hazard: Vehicle stopped ahead</div>
+</div>
 
-    <script>
-        // Show scenario selector after glasses animation
+<!-- Scenario Selector -->
+<div class="scenario-selector" id="scenario-selector">
+    <button class="scenario-btn" data-scenario="nav">Navigation</button>
+    <button class="scenario-btn" data-scenario="call">Incoming Call</button>
+    <button class="scenario-btn" data-scenario="call-accepted">Call Accepted</button>
+    <button class="scenario-btn" data-scenario="call-declined">Call Declined</button>
+    <button class="scenario-btn" data-scenario="hazard">Hazard Alert</button>
+</div>
+
+<script>
+    // ...
+
+    function startAnimation() {
+        const glassesFrame = document.getElementById('glasses-frame');
+        const leftLens = document.querySelector('.left-lens');
+        const rightLens = document.querySelector('.right-lens');
+        const drivingPov = document.querySelector('.driving-pov');
+
+        // Initial state - glasses at normal size
+        glassesFrame.style.transform = 'scale(1) translateZ(0)';
+        glassesFrame.style.opacity = '1';
+        drivingPov.style.filter = 'blur(8px)';
+
+        // Start the expansion after a pause to let user see initial state
         setTimeout(() => {
-            document.getElementById('scenario-selector').style.display = 'flex';
-        }, 4000);
+            // Add animation classes
+            glassesFrame.classList.add('putting-on');
+            leftLens.classList.add('expanding-lens');
+            rightLens.classList.add('expanding-lens');
 
-        let currentScenario = null;
-        let voiceTimeout = null;
+            // Animate blur out over 2.5s to match glasses animation
+            drivingPov.style.filter = 'blur(0px)';
+            drivingPov.style.transition = 'filter 2.5s cubic-bezier(0.23, 1, 0.32, 1)';
 
-        function showScenario(type) {
-            // Clear any existing timeouts and hide all scenarios
-            clearAllTimeouts();
-            hideAllScenarios();
-            
-            // Show selected scenario
-            const scenario = document.getElementById(`${type}${type.includes('-scenario') ? '' : '-scenario'}`);
-            if (scenario) {
-                scenario.style.display = 'block';
-                scenario.classList.add('visible');
-                currentScenario = type;
-                
-                // Set timeout based on scenario type
-                if (type === 'nav' || type === 'nav-scenario') {
-                    // Hide navigation after 5 seconds
-                    window.navTimeout = setTimeout(() => {
-                        scenario.style.opacity = '0';
-                        setTimeout(() => {
-                            scenario.style.display = 'none';
-                            scenario.classList.remove('visible');
-                            currentScenario = null;
-                        }, 300);
-                    }, 5000);
-                } 
-                else if (type === 'hazard' || type === 'hazard-scenario') {
-                    // Hide hazard alert after 5 seconds
-                    window.hazardTimeout = setTimeout(() => {
-                        scenario.style.opacity = '0';
-                        setTimeout(() => {
-                            scenario.style.display = 'none';
-                            scenario.classList.remove('visible');
-                            currentScenario = null;
-                        }, 300);
-                    }, 5000);
-                }
-            }
-        }
-
-        // Call timer variables
-        let callStartTime = 0;
-        let callTimer = null;
-
-        // Helper to show a single scenario message (Declined, Dismissed, Ended)
-        function showSingleScenarioMessage(message) {
-            // Remove any existing single-message scenarios
-            document.querySelectorAll('.scenario.call-ended').forEach(el => el.remove());
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'scenario call-ended visible';
-            msgDiv.textContent = message;
-            document.body.appendChild(msgDiv);
+            // After animation completes, clean up and show scenario selector
             setTimeout(() => {
-                msgDiv.style.opacity = '0';
-                setTimeout(() => {
-                    msgDiv.remove();
-                }, 300);
-            }, 1500);
-        }
-
-        // Handle call actions with animation sequence
-        function handleCallAction(action) {
-            // First, clear any existing timeouts and hide all scenarios
-            clearAllTimeouts();
-            hideAllScenarios();
-            
-            const callScreen = document.getElementById('call-scenario');
-            const acceptedScreen = document.getElementById('call-accepted');
-            const declinedScreen = document.getElementById('call-declined');
-            const timerElement = acceptedScreen.querySelector('.call-timer');
-            
-            // Show the incoming call screen first
-            callScreen.style.display = 'block';
-            callScreen.classList.add('visible');
-            
-            // After 5 seconds, show the appropriate state
-            window.callActionTimeout = setTimeout(() => {
-                callScreen.style.display = 'none';
-                callScreen.classList.remove('visible');
+                glassesFrame.style.display = 'none';
+                drivingPov.style.filter = 'none';
+                drivingPov.style.transition = 'filter 0.5s ease-out'; // Reset to default transition
                 
-                if (action === 'answer') {
-                    // Show call accepted with timer
-                    acceptedScreen.style.display = 'block';
-                    acceptedScreen.classList.add('visible');
-                    timerElement.textContent = '00:00';
-                    timerElement.classList.add('visible');
-                    
-                    // Start the call timer
-                    const startTime = Date.now();
-                    callTimer = setInterval(() => {
-                        const seconds = Math.floor((Date.now() - startTime) / 1000);
-                        const minutes = Math.floor(seconds / 60);
-                        const remainingSeconds = seconds % 60;
-                        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-                    }, 1000);
-                    
-                    // Auto-end call after 10 seconds
-                    window.callEndTimeout = setTimeout(() => {
-                        clearInterval(callTimer);
-                        acceptedScreen.style.display = 'none';
-                        acceptedScreen.classList.remove('visible');
-                        showSingleScenarioMessage('Ended.');
-                    }, 10000);
-                    
-                } else if (action === 'decline') {
-                    // Show declined message
-                    declinedScreen.style.display = 'block';
-                    declinedScreen.classList.add('visible');
-                    
-                    // Hide after 1.5 seconds
-                    window.declineHideTimeout = setTimeout(() => {
-                        declinedScreen.style.opacity = '0';
-                        setTimeout(() => {
-                            declinedScreen.style.display = 'none';
-                            declinedScreen.style.opacity = '1';
-                            declinedScreen.classList.remove('visible');
-                        }, 300);
-                    }, 1500);
-                }
-            }, 5000); // Show incoming call for 5 seconds before action
-        }
-
-        // Clear all active timeouts
-        function clearAllTimeouts() {
-            if (window.navTimeout) clearTimeout(window.navTimeout);
-            if (window.hazardTimeout) clearTimeout(window.hazardTimeout);
-            if (window.callActionTimeout) clearTimeout(window.callActionTimeout);
-            if (window.callEndTimeout) clearTimeout(window.callEndTimeout);
-            if (window.declineHideTimeout) clearTimeout(window.declineHideTimeout);
-            if (window.callTimer) clearInterval(window.callTimer);
-            
-            // Reset all timeout variables
-            window.navTimeout = null;
-            window.hazardTimeout = null;
-            window.callActionTimeout = null;
-            window.callEndTimeout = null;
-            window.declineHideTimeout = null;
-            window.callTimer = null;
-        }
-        
-        // Hide all scenarios
-        function hideAllScenarios() {
-            document.querySelectorAll('.scenario').forEach(el => {
-                el.style.display = 'none';
-                el.style.opacity = '1';
-                el.classList.remove('visible');
-            });
-        }
-
-        // End call
-        function endCall(timerElement) {
-            clearInterval(callTimer);
-            if (timerElement) {
-                timerElement.classList.remove('visible');
-                
-                // Show call ended message
-                const acceptedScreen = document.getElementById('call-accepted');
-                const endedMessage = document.createElement('div');
-                endedMessage.className = 'scenario call-ended';
-                endedMessage.textContent = 'Ended.';
-                
-                // Replace the call screen with ended message
-                acceptedScreen.parentNode.insertBefore(endedMessage, acceptedScreen.nextSibling);
-                acceptedScreen.style.display = 'none';
-                endedMessage.classList.add('visible');
-                
-                // Remove ended message after 1.5 seconds
-                setTimeout(() => {
-                    endedMessage.style.opacity = '0';
-                    setTimeout(() => {
-                        endedMessage.remove();
-                    }, 300);
-                }, 1500);
-            }
-        }
-
-        // Initialize voice command simulation
-        function initVoiceCommands() {
-            // Handle demo buttons
-            document.querySelectorAll('.scenario-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const scenario = e.target.getAttribute('data-scenario');
-                    
-                    // Prevent default to avoid any default button behavior
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Clear any existing timeouts and hide all scenarios
-                    clearAllTimeouts();
-                    hideAllScenarios();
-                    
-                    if (scenario === 'call') {
-                        // Show incoming call for 5 seconds, then show dismissed
-                        const callScreen = document.getElementById('call-scenario');
-                        callScreen.style.display = 'block';
-                        callScreen.classList.add('visible');
-                        
-                        // Auto-dismiss after 5 seconds
-                        window.callActionTimeout = setTimeout(() => {
-                            callScreen.style.display = 'none';
-                            callScreen.classList.remove('visible');
-                            showSingleScenarioMessage('Dismissed.');
-                        }, 5000);
-                        
-                    } else if (scenario === 'call-accepted') {
-                        handleCallAction('answer');
-                    } else if (scenario === 'call-declined') {
-                        handleCallAction('decline');
-                    } else {
-                        // For navigation and hazard scenarios
-                        showScenario(scenario);
-                    }
-                    
-                    return false;
-                });
-            });
-
-            // Keyboard shortcuts for testing
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'a') {
-                    handleCallAction('answer');
-                    e.preventDefault();
-                }
-                if (e.key === 'd') {
-                    handleCallAction('decline');
-                    e.preventDefault();
-                }
-            });
-        }
-
-        function startAnimation() {
-            const glassesFrame = document.getElementById('glasses-frame');
-            const leftLens = document.querySelector('.left-lens');
-            const rightLens = document.querySelector('.right-lens');
-            const drivingPov = document.querySelector('.driving-pov');
-            
-            // Initial state - glasses at normal size
-            glassesFrame.style.transform = 'scale(1) translateZ(0)';
-            glassesFrame.style.opacity = '1';
-            
-            // Start the expansion after a short pause
-            setTimeout(() => {
-                // Add animation classes
-                glassesFrame.classList.add('putting-on');
-                leftLens.classList.add('expanding-lens');
-                rightLens.classList.add('expanding-lens');
-                
-                // After animation completes, clean up and show scenario selector
-                setTimeout(() => {
-                    glassesFrame.style.display = 'none';
-                    drivingPov.style.filter = 'none';
-                    document.getElementById('scenario-selector').style.display = 'flex';
-                }, 3000);
-            }, 1000); // 1 second pause at normal size
-        }
-        
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize voice commands and animations
-            initVoiceCommands();
-            
-            // Start the initial glasses animation
-            startAnimation();
-            
-            // Show scenario selector after glasses animation
-            setTimeout(() => {
+                // Show scenario selector immediately after animation
                 document.getElementById('scenario-selector').style.display = 'flex';
-            }, 4000);
+            }, 2000); // Reduced delay for quicker button appearance
             
-            // Click to reset animation (only when clicking on the background)
-            document.addEventListener('click', (e) => {
-                // Only reset if clicking on the background, not on any UI elements
-                if (!e.target.closest('.scenario') && 
-                    !e.target.closest('.scenario-selector') && 
-                    !e.target.closest('.call-option')) {
-                    
-                    const glassesFrame = document.getElementById('glasses-frame');
-                    const leftLens = document.querySelector('.left-lens');
-                    const rightLens = document.querySelector('.right-lens');
-                    const drivingPov = document.querySelector('.driving-pov');
-                    
-                    // Reset glasses styles
-                    glassesFrame.style.display = 'flex';
-                    glassesFrame.style.opacity = '1';
-                    drivingPov.style.filter = 'blur(8px)';
-                    document.getElementById('scenario-selector').style.display = 'none';
-                    
-                    // Hide all scenarios
-                    document.querySelectorAll('.scenario').forEach(el => {
-                        el.style.display = 'none';
-                        el.style.opacity = '1';
-                        el.classList.remove('visible');
-                    });
-                    
-                    // Reset animations
-                    glassesFrame.classList.remove('putting-on');
-                    leftLens.classList.remove('expanding-lens');
-                    rightLens.classList.remove('expanding-lens');
-                    
-                    // Force reflow and restart
-                    void glassesFrame.offsetWidth;
-                    startAnimation();
-                    
-                    // Show scenario selector again after animation
-                    setTimeout(() => {
-                        document.getElementById('scenario-selector').style.display = 'flex';
-                    }, 4000);
-                }
+        }, 1500); // Longer initial delay before animation starts
+    }
+
+    // Scenario button handlers
+    function setupScenarioHandlers() {
+        document.querySelectorAll('.scenario-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const scenario = e.target.dataset.scenario;
+                showScenario(scenario);
             });
         });
+    }
+
+    function showScenario(scenarioType) {
+        // Hide all scenarios first
+        document.querySelectorAll('.scenario').forEach(el => {
+            el.classList.remove('visible');
+            el.style.display = 'none';
+        });
+
+        // Show the selected scenario
+        let targetScenario;
+        switch(scenarioType) {
+            case 'nav':
+                targetScenario = document.getElementById('nav-scenario');
+                break;
+            case 'call':
+                targetScenario = document.getElementById('call-scenario');
+                break;
+            case 'call-accepted':
+                targetScenario = document.getElementById('call-accepted');
+                break;
+            case 'call-declined':
+                targetScenario = document.getElementById('call-declined');
+                break;
+            case 'hazard':
+                targetScenario = document.getElementById('hazard-scenario');
+                break;
+        }
+
+        if (targetScenario) {
+            targetScenario.style.display = 'block';
+            setTimeout(() => {
+                targetScenario.classList.add('visible');
+            }, 10);
+        }
+    }
+
+    // Click to reset animation (only when clicking on the background)
+    function setupResetHandler() {
+        document.addEventListener('click', (e) => {
+            // Only reset if clicking on the background, not on any UI elements
+            if (!e.target.closest('.scenario') && 
+                !e.target.closest('.scenario-selector') && 
+                !e.target.closest('.call-option')) {
+                
+                const glassesFrame = document.getElementById('glasses-frame');
+                const leftLens = document.querySelector('.left-lens');
+                const rightLens = document.querySelector('.right-lens');
+                const drivingPov = document.querySelector('.driving-pov');
+                
+                // Reset glasses styles
+                glassesFrame.style.display = 'flex';
+                glassesFrame.style.opacity = '1';
+                drivingPov.style.filter = 'blur(8px)';
+                document.getElementById('scenario-selector').style.display = 'none';
+                
+                // Hide all scenarios
+                document.querySelectorAll('.scenario').forEach(el => {
+                    el.style.display = 'none';
+                    el.style.opacity = '1';
+                    el.classList.remove('visible');
+                });
+                
+                // Reset animations
+                glassesFrame.classList.remove('putting-on');
+                leftLens.classList.remove('expanding-lens');
+                rightLens.classList.remove('expanding-lens');
+                
+                // Force reflow and restart
+                void glassesFrame.offsetWidth;
+                startAnimation();
+            }
+        });
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        startAnimation();
+        setupScenarioHandlers();
+        setupResetHandler();
+    });
     </script>
 </body>
 </html>
