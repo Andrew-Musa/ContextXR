@@ -396,17 +396,9 @@
         let voiceTimeout = null;
 
         function showScenario(type) {
-            // Hide all scenarios first
-            document.querySelectorAll('.scenario').forEach(el => {
-                el.style.display = 'none';
-                el.classList.remove('visible');
-            });
-            
-            // Clear any existing timeouts
-            if (window.navTimeout) {
-                clearTimeout(window.navTimeout);
-                window.navTimeout = null;
-            }
+            // Clear any existing timeouts and hide all scenarios
+            clearAllTimeouts();
+            hideAllScenarios();
             
             // Show selected scenario
             const scenario = document.getElementById(`${type}${type.includes('-scenario') ? '' : '-scenario'}`);
@@ -415,8 +407,9 @@
                 scenario.classList.add('visible');
                 currentScenario = type;
                 
-                // Auto-hide navigation after 5 seconds
+                // Set timeout based on scenario type
                 if (type === 'nav' || type === 'nav-scenario') {
+                    // Hide navigation after 5 seconds
                     window.navTimeout = setTimeout(() => {
                         scenario.style.opacity = '0';
                         setTimeout(() => {
@@ -424,50 +417,18 @@
                             scenario.classList.remove('visible');
                             currentScenario = null;
                         }, 300);
-                    }, 5000); // Show for 5 seconds
-                }
-                
-                // Auto-hide hazard alert after 3 seconds (shorter duration as it's more urgent)
+                    }, 5000);
+                } 
                 else if (type === 'hazard' || type === 'hazard-scenario') {
-                    window.navTimeout = setTimeout(() => {
+                    // Hide hazard alert after 5 seconds
+                    window.hazardTimeout = setTimeout(() => {
                         scenario.style.opacity = '0';
                         setTimeout(() => {
                             scenario.style.display = 'none';
                             scenario.classList.remove('visible');
                             currentScenario = null;
                         }, 300);
-                    }, 3000); // Show for 3 seconds
-                }
-                
-                // Reset call timer if showing call screen
-                if (type === 'call') {
-                    const timerElement = document.querySelector('.call-timer');
-                    if (timerElement) {
-                        timerElement.textContent = '00:00';
-                        timerElement.classList.remove('visible');
-                    }
-                    
-                    // Auto-dismiss call after 5 seconds
-                    window.callDismissTimeout = setTimeout(() => {
-                        const callScreen = document.getElementById('call-scenario');
-                        const dismissedMessage = document.createElement('div');
-                        dismissedMessage.className = 'scenario call-ended';
-                        dismissedMessage.textContent = 'Dismissed.';
-                        
-                        // Replace the call screen with dismissed message
-                        callScreen.parentNode.insertBefore(dismissedMessage, callScreen.nextSibling);
-                        callScreen.style.display = 'none';
-                        dismissedMessage.classList.add('visible');
-                        
-                        // Remove dismissed message after 1.5 seconds
-                        setTimeout(() => {
-                            dismissedMessage.style.opacity = '0';
-                            setTimeout(() => {
-                                dismissedMessage.remove();
-                                currentScenario = null;
-                            }, 300);
-                        }, 1500);
-                    }, 5000); // Dismiss after 5 seconds
+                    }, 5000);
                 }
             }
         }
@@ -478,65 +439,104 @@
 
         // Handle call actions with animation sequence
         function handleCallAction(action) {
+            // First, clear any existing timeouts and hide all scenarios
+            clearAllTimeouts();
+            hideAllScenarios();
+            
             const callScreen = document.getElementById('call-scenario');
             const acceptedScreen = document.getElementById('call-accepted');
             const declinedScreen = document.getElementById('call-declined');
             const timerElement = acceptedScreen.querySelector('.call-timer');
             
-            // First, show the incoming call animation
-            showScenario('call');
+            // Show the incoming call screen first
+            callScreen.style.display = 'block';
+            callScreen.classList.add('visible');
             
-            // After a delay, show the selected state
-            setTimeout(() => {
+            // After 5 seconds, show the appropriate state
+            window.callActionTimeout = setTimeout(() => {
+                callScreen.style.display = 'none';
+                callScreen.classList.remove('visible');
+                
                 if (action === 'answer') {
-                    // Fade to accepted state
-                    callScreen.style.opacity = '0';
-                    acceptedScreen.style.opacity = '0';
+                    // Show call accepted with timer
                     acceptedScreen.style.display = 'block';
+                    acceptedScreen.classList.add('visible');
+                    timerElement.textContent = '00:00';
+                    timerElement.classList.add('visible');
                     
-                    // Fade in accepted screen
-                    setTimeout(() => {
-                        callScreen.style.display = 'none';
-                        acceptedScreen.style.opacity = '1';
-                        timerElement.classList.add('visible');
-                        startCallTimer(timerElement);
+                    // Start the call timer
+                    const startTime = Date.now();
+                    callTimer = setInterval(() => {
+                        const seconds = Math.floor((Date.now() - startTime) / 1000);
+                        const minutes = Math.floor(seconds / 60);
+                        const remainingSeconds = seconds % 60;
+                        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+                    }, 1000);
+                    
+                    // Auto-end call after 10 seconds
+                    window.callEndTimeout = setTimeout(() => {
+                        clearInterval(callTimer);
+                        acceptedScreen.style.display = 'none';
+                        acceptedScreen.classList.remove('visible');
                         
-                        // Auto-end call after 10 seconds for demo
-                        setTimeout(() => endCall(timerElement), 10000);
-                    }, 300);
-                    
-                } else if (action === 'decline') {
-                    // Fade to declined state
-                    callScreen.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        callScreen.style.display = 'none';
-                        declinedScreen.style.display = 'block';
+                        // Show ended message
+                        const endedMessage = document.createElement('div');
+                        endedMessage.className = 'scenario call-ended';
+                        endedMessage.textContent = 'Ended.';
+                        document.body.appendChild(endedMessage);
                         
-                        // Hide after delay
+                        // Remove ended message after 1.5 seconds
                         setTimeout(() => {
-                            declinedScreen.style.opacity = '0';
+                            endedMessage.style.opacity = '0';
                             setTimeout(() => {
-                                declinedScreen.style.display = 'none';
-                                declinedScreen.style.opacity = '1';
+                                endedMessage.remove();
                             }, 300);
                         }, 1500);
-                    }, 300);
+                    }, 10000);
+                    
+                } else if (action === 'decline') {
+                    // Show declined message
+                    declinedScreen.style.display = 'block';
+                    declinedScreen.classList.add('visible');
+                    
+                    // Hide after 1.5 seconds
+                    window.declineHideTimeout = setTimeout(() => {
+                        declinedScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            declinedScreen.style.display = 'none';
+                            declinedScreen.style.opacity = '1';
+                            declinedScreen.classList.remove('visible');
+                        }, 300);
+                    }, 1500);
                 }
-            }, 2000); // Show incoming call for 2 seconds before transitioning
+            }, 5000); // Show incoming call for 5 seconds before action
         }
 
-        // Start call timer
-        function startCallTimer(timerElement) {
-            callStartTime = Date.now();
-            clearInterval(callTimer);
+        // Clear all active timeouts
+        function clearAllTimeouts() {
+            if (window.navTimeout) clearTimeout(window.navTimeout);
+            if (window.hazardTimeout) clearTimeout(window.hazardTimeout);
+            if (window.callActionTimeout) clearTimeout(window.callActionTimeout);
+            if (window.callEndTimeout) clearTimeout(window.callEndTimeout);
+            if (window.declineHideTimeout) clearTimeout(window.declineHideTimeout);
+            if (window.callTimer) clearInterval(window.callTimer);
             
-            callTimer = setInterval(() => {
-                const seconds = Math.floor((Date.now() - callStartTime) / 1000);
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-            }, 1000);
+            // Reset all timeout variables
+            window.navTimeout = null;
+            window.hazardTimeout = null;
+            window.callActionTimeout = null;
+            window.callEndTimeout = null;
+            window.declineHideTimeout = null;
+            window.callTimer = null;
+        }
+        
+        // Hide all scenarios
+        function hideAllScenarios() {
+            document.querySelectorAll('.scenario').forEach(el => {
+                el.style.display = 'none';
+                el.style.opacity = '1';
+                el.classList.remove('visible');
+            });
         }
 
         // End call
@@ -577,17 +577,45 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    if (scenario === 'call-accepted') {
+                    // Clear any existing timeouts and hide all scenarios
+                    clearAllTimeouts();
+                    hideAllScenarios();
+                    
+                    if (scenario === 'call') {
+                        // Show incoming call for 5 seconds, then show dismissed
+                        const callScreen = document.getElementById('call-scenario');
+                        callScreen.style.display = 'block';
+                        callScreen.classList.add('visible');
+                        
+                        // Auto-dismiss after 5 seconds
+                        window.callActionTimeout = setTimeout(() => {
+                            callScreen.style.display = 'none';
+                            callScreen.classList.remove('visible');
+                            
+                            // Show dismissed message
+                            const dismissedMessage = document.createElement('div');
+                            dismissedMessage.className = 'scenario call-ended';
+                            dismissedMessage.textContent = 'Dismissed.';
+                            document.body.appendChild(dismissedMessage);
+                            
+                            // Remove dismissed message after 1.5 seconds
+                            setTimeout(() => {
+                                dismissedMessage.style.opacity = '0';
+                                setTimeout(() => {
+                                    dismissedMessage.remove();
+                                }, 300);
+                            }, 1500);
+                        }, 5000);
+                        
+                    } else if (scenario === 'call-accepted') {
                         handleCallAction('answer');
                     } else if (scenario === 'call-declined') {
                         handleCallAction('decline');
-                    } else if (scenario === 'call') {
-                        // For the main call button, just show the call screen
-                        showScenario('call');
                     } else {
-                        // For other scenarios, just show them directly
+                        // For navigation and hazard scenarios
                         showScenario(scenario);
                     }
+                    
                     return false;
                 });
             });
