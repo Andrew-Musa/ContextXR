@@ -437,6 +437,22 @@
         let callStartTime = 0;
         let callTimer = null;
 
+        // Helper to show a single scenario message (Declined, Dismissed, Ended)
+        function showSingleScenarioMessage(message) {
+            // Remove any existing single-message scenarios
+            document.querySelectorAll('.scenario.call-ended').forEach(el => el.remove());
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'scenario call-ended visible';
+            msgDiv.textContent = message;
+            document.body.appendChild(msgDiv);
+            setTimeout(() => {
+                msgDiv.style.opacity = '0';
+                setTimeout(() => {
+                    msgDiv.remove();
+                }, 300);
+            }, 1500);
+        }
+
         // Handle call actions with animation sequence
         function handleCallAction(action) {
             // First, clear any existing timeouts and hide all scenarios
@@ -478,20 +494,7 @@
                         clearInterval(callTimer);
                         acceptedScreen.style.display = 'none';
                         acceptedScreen.classList.remove('visible');
-                        
-                        // Show ended message
-                        const endedMessage = document.createElement('div');
-                        endedMessage.className = 'scenario call-ended';
-                        endedMessage.textContent = 'Ended.';
-                        document.body.appendChild(endedMessage);
-                        
-                        // Remove ended message after 1.5 seconds
-                        setTimeout(() => {
-                            endedMessage.style.opacity = '0';
-                            setTimeout(() => {
-                                endedMessage.remove();
-                            }, 300);
-                        }, 1500);
+                        showSingleScenarioMessage('Ended.');
                     }, 10000);
                     
                 } else if (action === 'decline') {
@@ -591,20 +594,7 @@
                         window.callActionTimeout = setTimeout(() => {
                             callScreen.style.display = 'none';
                             callScreen.classList.remove('visible');
-                            
-                            // Show dismissed message
-                            const dismissedMessage = document.createElement('div');
-                            dismissedMessage.className = 'scenario call-ended';
-                            dismissedMessage.textContent = 'Dismissed.';
-                            document.body.appendChild(dismissedMessage);
-                            
-                            // Remove dismissed message after 1.5 seconds
-                            setTimeout(() => {
-                                dismissedMessage.style.opacity = '0';
-                                setTimeout(() => {
-                                    dismissedMessage.remove();
-                                }, 300);
-                            }, 1500);
+                            showSingleScenarioMessage('Dismissed.');
                         }, 5000);
                         
                     } else if (scenario === 'call-accepted') {
