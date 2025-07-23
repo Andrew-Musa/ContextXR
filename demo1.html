@@ -446,6 +446,28 @@
                         timerElement.textContent = '00:00';
                         timerElement.classList.remove('visible');
                     }
+                    
+                    // Auto-dismiss call after 5 seconds
+                    window.callDismissTimeout = setTimeout(() => {
+                        const callScreen = document.getElementById('call-scenario');
+                        const dismissedMessage = document.createElement('div');
+                        dismissedMessage.className = 'scenario call-ended';
+                        dismissedMessage.textContent = 'Dismissed.';
+                        
+                        // Replace the call screen with dismissed message
+                        callScreen.parentNode.insertBefore(dismissedMessage, callScreen.nextSibling);
+                        callScreen.style.display = 'none';
+                        dismissedMessage.classList.add('visible');
+                        
+                        // Remove dismissed message after 1.5 seconds
+                        setTimeout(() => {
+                            dismissedMessage.style.opacity = '0';
+                            setTimeout(() => {
+                                dismissedMessage.remove();
+                                currentScenario = null;
+                            }, 300);
+                        }, 1500);
+                    }, 5000); // Dismiss after 5 seconds
                 }
             }
         }
